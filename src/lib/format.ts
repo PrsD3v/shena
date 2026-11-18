@@ -10,6 +10,11 @@ const numberFormat = new Intl.NumberFormat(PERSIAN_LOCALE, {
   maximumFractionDigits: 0,
 });
 
+const ratingFormat = new Intl.NumberFormat(PERSIAN_LOCALE, {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
 const jalaliDateInUtc = new Intl.DateTimeFormat(PERSIAN_LOCALE, {
   calendar: PERSIAN_CALENDAR,
   timeZone: "UTC",
@@ -57,6 +62,15 @@ export function formatNumber(value: number): string {
 /** Formats a whole Toman amount with its unit. */
 export function formatToman(value: number): string {
   return `${formatNumber(value)} تومان`;
+}
+
+/** Formats a 0 to 5 rating with one Persian fraction digit. */
+export function formatRating(value: number): string {
+  assertFinite(value);
+  if (value < 0 || value > 5) {
+    throw new RangeError(`Expected a rating between 0 and 5, received ${value}`);
+  }
+  return ratingFormat.format(value);
 }
 
 /** Formats a calendar date or an instant as a Jalali date. */

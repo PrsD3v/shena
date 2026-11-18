@@ -27,7 +27,7 @@
   color, radius, and spacing tokens in `globals.css`; self-hosted Vazirmatn; the
   standard `src/app/layout.tsx` with `<html lang="fa" dir="rtl">`; Toman, Persian
   digit, and Jalali date formatting utilities.
-- [ ] 2. **Shena component layer on Nova** - restyled button, input, select,
+- [x] 2. **Shena component layer on Nova** - restyled button, input, select,
   badge, card, dialog, sheet, segmented control, rating, and empty-state
   primitives with consistent focus, radius, and motion behavior.
 - [ ] 3. **Domain models, seeded data, and repositories** - typed coaches,

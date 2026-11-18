@@ -1,170 +1,370 @@
+"use client";
+
+import { useState } from "react";
+import { MapPinIcon, SearchIcon } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  formatDuration,
-  formatJalaliDate,
-  formatJalaliWeekday,
-  formatNumber,
-  formatTime,
-  formatToman,
-} from "@/lib/format";
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Rating } from "@/components/ui/rating";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { formatDuration, formatJalaliDate, formatToman } from "@/lib/format";
 
-const palette = [
-  { token: "--background", label: "پس‌زمینه صفحه", className: "bg-background" },
-  { token: "--card", label: "سطح کارت", className: "bg-card" },
-  { token: "--primary", label: "سرمه‌ای اصلی", className: "bg-primary" },
-  { token: "--brand-blue", label: "آبی پیوند", className: "bg-brand-blue" },
-  { token: "--brand-aqua", label: "فیروزه‌ای", className: "bg-brand-aqua" },
-  { token: "--brand-water", label: "آب روشن", className: "bg-brand-water" },
-  { token: "--foreground", label: "متن اصلی", className: "bg-foreground" },
-  {
-    token: "--muted-foreground",
-    label: "متن کمکی",
-    className: "bg-muted-foreground",
-  },
-  { token: "--border", label: "خط و حاشیه", className: "bg-border" },
-  { token: "--success", label: "تأیید", className: "bg-success" },
-  { token: "--warning", label: "هشدار", className: "bg-warning" },
-  { token: "--destructive", label: "خطا", className: "bg-destructive" },
+const cities = [
+  { value: "tehran", label: "تهران" },
+  { value: "karaj", label: "کرج" },
+  { value: "isfahan", label: "اصفهان" },
+  { value: "shiraz", label: "شیراز" },
+  { value: "mashhad", label: "مشهد" },
 ];
 
-const tints = [
-  { token: "--accent-aqua", label: "فیروزه‌ای", className: "bg-accent-aqua" },
-  { token: "--accent-sky", label: "آبی آسمانی", className: "bg-accent-sky" },
-  { token: "--accent-mint", label: "نعنایی", className: "bg-accent-mint" },
-  { token: "--accent-sand", label: "شنی", className: "bg-accent-sand" },
+const buttons = [
+  { label: "اصلی", variant: "default" as const },
+  { label: "خطی", variant: "outline" as const },
+  { label: "ثانویه", variant: "secondary" as const },
+  { label: "شبح", variant: "ghost" as const },
+  { label: "خطر", variant: "destructive" as const },
+  { label: "پیوند", variant: "link" as const },
 ];
 
-const radii = [
-  { label: "کارت، ۱۶ پیکسل", className: "rounded-lg" },
-  { label: "ورودی، ۱۲ پیکسل", className: "rounded-md" },
-  { label: "دکمه قرصی", className: "rounded-full" },
+const badges = [
+  { label: "تأییدشده", variant: "default" as const },
+  { label: "جدید", variant: "secondary" as const },
+  { label: "شنای کودکان", variant: "accent-aqua" as const },
+  { label: "بانوان", variant: "accent-sky" as const },
+  { label: "مبتدی", variant: "accent-mint" as const },
+  { label: "خصوصی", variant: "accent-sand" as const },
+  { label: "ظرفیت آزاد", variant: "success" as const },
+  { label: "ظرفیت محدود", variant: "warning" as const },
+  { label: "لغو شده", variant: "destructive" as const },
+  { label: "خطی", variant: "outline" as const },
 ];
 
 const samples = [
-  { label: "قیمت", value: formatToman(700000) },
-  { label: "عدد", value: formatNumber(12500) },
-  { label: "تاریخ", value: formatJalaliDate("2026-03-21") },
-  { label: "روز هفته", value: formatJalaliWeekday("2026-03-21") },
-  { label: "ساعت", value: formatTime("09:30") },
+  { label: "قیمت جلسه", value: formatToman(700000) },
   { label: "مدت جلسه", value: formatDuration(90) },
+  { label: "تاریخ", value: formatJalaliDate("2026-03-21") },
+];
+
+const scopes = [
+  { value: "all", label: "همه" },
+  { value: "in-person", label: "حضوری" },
+  { value: "online", label: "آنلاین" },
 ];
 
 export default function Home() {
+  const [scope, setScope] = useState("all");
+
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
       <header className="border-b border-border pb-6">
         <p className="text-sm font-medium text-brand-blue">
-          پیش‌نمایش پایه طراحی
+          پیش‌نمایش اجزای رابط
         </p>
         <h1 className="mt-2 text-4xl font-bold tracking-tight text-brand-navy sm:text-5xl">
-          شنا
+          لایه اجزای شنا
         </h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          این صفحه موقت رنگ، تایپوگرافی فارسی و قالب راست‌به‌چپ را نشان می‌دهد و
-          در گام بعدی با صفحه اصلی جایگزین می‌شود.
+          این صفحه موقت همه اجزای پایه را کنار هم نشان می‌دهد تا شعاع گوشه،
+          حاشیه، حالت فوکوس و رفتار راست‌به‌چپ بررسی شود. صفحه اصلی در گام ۵
+          جایگزین آن می‌شود.
         </p>
       </header>
 
       <div className="space-y-10 pt-8">
-        <section aria-labelledby="typography-title" className="space-y-4">
+        <section aria-labelledby="buttons-title" className="space-y-4">
           <h2
-            id="typography-title"
+            id="buttons-title"
             className="text-xl font-semibold text-brand-navy"
           >
-            تایپوگرافی
+            دکمه‌ها
           </h2>
-          <div className="rounded-lg border border-border bg-card p-6">
-            <p className="text-4xl leading-tight font-bold text-brand-navy">
-              تیتر نمایشی برای معرفی مربیان شنا
-            </p>
-            <p className="mt-5 text-2xl font-semibold text-foreground">
-              تیتر بخش: پکیج‌های تمرین
-            </p>
-            <p className="mt-4 text-base text-foreground">
-              متن اصلی با فاصله خط مناسب برای خواندن جمله‌های فارسی نوشته شده
-              است. وزن و اندازه، سلسله‌مراتب را می‌سازند و رنگ تنها برای تأکید به
-              کار می‌رود.
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              متن کمکی و فراداده در اندازه کوچک‌تر و رنگ ملایم‌تر
-            </p>
-            <p
-              dir="ltr"
-              className="mt-4 font-mono text-xs text-muted-foreground text-left"
-            >
-              fa-IR / Asia/Tehran / 2026-03-21T09:30:00+03:30
-            </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {buttons.map((button) => (
+              <Button key={button.variant} variant={button.variant}>
+                {button.label}
+              </Button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="sm">کوچک</Button>
+            <Button>معمولی</Button>
+            <Button size="lg">بزرگ</Button>
+            <Button disabled>غیرفعال</Button>
           </div>
         </section>
 
-        <section aria-labelledby="palette-title" className="space-y-4">
-          <h2 id="palette-title" className="text-xl font-semibold text-brand-navy">
-            رنگ‌ها
+        <section aria-labelledby="fields-title" className="space-y-4">
+          <h2
+            id="fields-title"
+            className="text-xl font-semibold text-brand-navy"
+          >
+            ورودی‌ها
           </h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {palette.map((item) => (
-              <div
-                key={item.token}
-                className="overflow-hidden rounded-md border border-border bg-card"
-              >
-                <div className={`h-12 ${item.className}`} />
-                <div className="p-2">
-                  <p className="text-xs text-foreground">{item.label}</p>
-                  <p
-                    dir="ltr"
-                    className="font-mono text-[0.7rem] text-muted-foreground text-left"
-                  >
-                    {item.token}
-                  </p>
-                </div>
-              </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label htmlFor="gallery-name" className="text-sm font-medium">
+                نام مربی
+              </label>
+              <Input
+                id="gallery-name"
+                placeholder="مثلاً سارا محمدی"
+                defaultValue="سارا محمدی"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="gallery-city" className="text-sm font-medium">
+                شهر
+              </label>
+              <Select items={cities} defaultValue="tehran">
+                <SelectTrigger id="gallery-city" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities.map((city) => (
+                    <SelectItem key={city.value} value={city.value}>
+                      {city.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="gallery-invalid" className="text-sm font-medium">
+                جست‌وجو
+              </label>
+              <Input
+                id="gallery-invalid"
+                aria-invalid="true"
+                aria-describedby="gallery-invalid-error"
+                defaultValue=""
+                placeholder="نام یا تخصص"
+              />
+              <p id="gallery-invalid-error" className="text-sm text-destructive">
+                عبارت جست‌وجو نمی‌تواند خالی باشد.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="gallery-disabled" className="text-sm font-medium">
+                ورودی غیرفعال
+              </label>
+              <Input id="gallery-disabled" disabled defaultValue="۶۰۰٬۰۰۰" />
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="badges-title" className="space-y-4">
+          <h2
+            id="badges-title"
+            className="text-xl font-semibold text-brand-navy"
+          >
+            برچسب‌ها
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {badges.map((badge) => (
+              <Badge key={badge.variant} variant={badge.variant}>
+                {badge.label}
+              </Badge>
             ))}
           </div>
         </section>
 
-        <section aria-labelledby="tints-title" className="space-y-4">
-          <h2 id="tints-title" className="text-xl font-semibold text-brand-navy">
-            رنگ‌های تأکیدی کارت
+        <section aria-labelledby="cards-title" className="space-y-4">
+          <h2
+            id="cards-title"
+            className="text-xl font-semibold text-brand-navy"
+          >
+            کارت‌ها
           </h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {tints.map((tint) => (
-              <div
-                key={tint.token}
-                className={`rounded-lg p-4 text-brand-navy ${tint.className}`}
-              >
-                <p className="text-sm font-semibold">{tint.label}</p>
-                <p
-                  dir="ltr"
-                  className="mt-1 font-mono text-[0.7rem] opacity-80 text-right"
-                >
-                  {tint.token}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>سارا محمدی</CardTitle>
+                <CardDescription>مربی شنای کودکان، تهران</CardDescription>
+                <CardAction>
+                  <Badge>تأییدشده</Badge>
+                </CardAction>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPinIcon className="size-4" />
+                  استخر قائم، تهران
                 </p>
-              </div>
-            ))}
+                <p className="text-sm">۱۲ سال تجربه، جلسه ۹۰ دقیقه‌ای</p>
+              </CardContent>
+              <CardFooter className="justify-between">
+                <span className="text-sm font-medium">
+                  {formatToman(700000)}
+                </span>
+                <Button size="sm">انتخاب مربی</Button>
+              </CardFooter>
+            </Card>
+            <Card className="bg-accent-mint">
+              <CardHeader>
+                <CardTitle>پکیج پنج جلسه‌ای</CardTitle>
+                <CardDescription>
+                  مناسب تمرین منظم هفتگی با تخفیف نسبت به جلسه تکی
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{formatToman(3200000)}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  هر جلسه {formatToman(640000)}
+                </p>
+              </CardContent>
+              <CardFooter className="justify-end">
+                <Button variant="outline" size="sm">
+                  جزئیات پکیج
+                </Button>
+              </CardFooter>
+            </Card>
           </div>
         </section>
 
-        <section aria-labelledby="shape-title" className="space-y-4">
-          <h2 id="shape-title" className="text-xl font-semibold text-brand-navy">
-            گوشه‌ها
+        <section aria-labelledby="controls-title" className="space-y-4">
+          <h2
+            id="controls-title"
+            className="text-xl font-semibold text-brand-navy"
+          >
+            کنترل و نمایش
           </h2>
-          <div className="flex flex-wrap items-center gap-4">
-            {radii.map((radius) => (
-              <div
-                key={radius.label}
-                className={`flex h-20 w-40 items-center justify-center border border-border bg-secondary px-4 text-center text-sm font-medium text-brand-navy ${radius.className}`}
-              >
-                {radius.label}
-              </div>
-            ))}
-            <span className="rounded-full bg-brand-aqua px-4 py-1.5 text-sm font-medium text-brand-navy">
-              برچسب قرصی
-            </span>
+          <div className="flex flex-col gap-4">
+            <div className="space-y-2">
+              <p className="text-sm font-medium">نوع جلسه</p>
+              <SegmentedControl
+                aria-label="نوع جلسه"
+                items={scopes}
+                value={scope}
+                onValueChange={setScope}
+              />
+              <p className="text-sm text-muted-foreground">
+                انتخاب فعلی:{" "}
+                {scopes.find((item) => item.value === scope)?.label}
+              </p>
+            </div>
+            <Rating value={4.8} count={24} />
+            <Card>
+              <CardContent className="pt-4">
+                <EmptyState
+                  icon={SearchIcon}
+                  title="مربی‌ای پیدا نشد"
+                  description="فیلترها را تغییر دهید یا شهر دیگری را انتخاب کنید."
+                  action={
+                    <Button variant="outline" size="sm">
+                      پاک کردن فیلترها
+                    </Button>
+                  }
+                />
+              </CardContent>
+            </Card>
           </div>
         </section>
 
-        <section aria-labelledby="format-title" className="space-y-4">
-          <h2 id="format-title" className="text-xl font-semibold text-brand-navy">
-            قالب‌بندی عدد و تاریخ
+        <section aria-labelledby="overlays-title" className="space-y-4">
+          <h2
+            id="overlays-title"
+            className="text-xl font-semibold text-brand-navy"
+          >
+            پنجره و کشو
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            <Dialog>
+              <DialogTrigger render={<Button variant="outline" />}>
+                باز کردن پنجره
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>تأیید رزرو جلسه</DialogTitle>
+                  <DialogDescription>
+                    سارا محمدی، تهران، {formatJalaliDate("2026-03-21")} ساعت
+                    ۰۹:۳۰
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="rounded-md bg-brand-water p-4 text-sm text-brand-navy">
+                  پرداخت این نسخه آزمایشی است و مبلغی جابه‌جا نمی‌شود.
+                </div>
+                <DialogFooter showCloseButton>
+                  <Button>ادامه</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Sheet>
+              <SheetTrigger render={<Button variant="outline" />}>
+                باز کردن کشو
+              </SheetTrigger>
+              <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle>فیلترها</SheetTitle>
+                  <SheetDescription>
+                    نمونه کشوی کنار صفحه برای فیلترهای جست‌وجو
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="flex-1 space-y-3 px-4">
+                  <div className="space-y-2">
+                    <label htmlFor="sheet-query" className="text-sm font-medium">
+                      جست‌وجو
+                    </label>
+                    <div className="relative">
+                      <SearchIcon className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-muted-foreground" />
+                      <Input
+                        id="sheet-query"
+                        className="ps-9"
+                        placeholder="نام مربی"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary">بانوان</Badge>
+                    <Badge variant="outline">خصوصی</Badge>
+                    <Badge variant="outline">کودکان</Badge>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </section>
+
+        <section aria-labelledby="formats-title" className="space-y-4">
+          <h2
+            id="formats-title"
+            className="text-xl font-semibold text-brand-navy"
+          >
+            قالب‌بندی
           </h2>
           <dl className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
             {samples.map((sample) => (
@@ -178,22 +378,9 @@ export default function Home() {
                 </dd>
               </div>
             ))}
-            <div className="flex items-center justify-between gap-4 px-4 py-3">
-              <dt className="text-sm text-muted-foreground">
-                مقدار لاتین ذخیره‌شده
-              </dt>
-              <dd dir="ltr" className="font-mono text-sm text-foreground">
-                2026-03-21 09:30
-              </dd>
-            </div>
           </dl>
         </section>
       </div>
-
-      <p className="mt-10 border-t border-border pt-6 text-sm text-muted-foreground">
-        این صفحه فقط برای بررسی پایه طراحی است و در آیتم ۵ نقشه ساخت با صفحه اصلی
-        جایگزین می‌شود.
-      </p>
     </main>
   );
 }
