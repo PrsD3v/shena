@@ -23,7 +23,7 @@
 
 ## Milestone 1 - Foundation
 
-- [ ] 1. **Design tokens, Persian typography, and Next.js root layout** - Shena
+- [x] 1. **Design tokens, Persian typography, and Next.js root layout** - Shena
   color, radius, and spacing tokens in `globals.css`; self-hosted Vazirmatn; the
   standard `src/app/layout.tsx` with `<html lang="fa" dir="rtl">`; Toman, Persian
   digit, and Jalali date formatting utilities.
