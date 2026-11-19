@@ -30,7 +30,7 @@
 - [x] 2. **Shena component layer on Nova** - restyled button, input, select,
   badge, card, dialog, sheet, segmented control, rating, and empty-state
   primitives with consistent focus, radius, and motion behavior.
-- [ ] 3. **Domain models, seeded data, and repositories** - typed coaches,
+- [x] 3. **Domain models, seeded data, and repositories** - typed coaches,
   specialties, cities, packages, package purchase records, reviews, availability,
   testimonials, and demo student; eight written coach profiles; safe versioned
   `localStorage` and `sessionStorage` helpers; coach, booking, favorite, review,
