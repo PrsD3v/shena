@@ -39,7 +39,7 @@
 
 ## Milestone 2 - Discovery and comparison
 
-- [ ] 4. **Global chrome, coach discovery, and coach profile** - header, footer,
+- [x] 4. **Global chrome, coach discovery, and coach profile** - header, footer,
   and RTL mobile navigation composed into the root layout; directory search by
   name and specialty, city, price, gender, specialty, level, and age-group
   filters, sorting, active chips, clear-all, result count, URL-query state,
